@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="stylesheet" href="style.css" />
+    <title>The Pool</title>
+    <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+      crossorigin="anonymous"
+    ></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r125/examples/js/loaders/GLTFLoader.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r125/examples/js/controls/OrbitControls.js"></script> -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"
+      integrity="sha512-LF8ZB1iTwi4Qvkm4pekHG4a437Y9Af5ZuwbnW4GTbAWQeR2E4KW8WF+xH8b9psevV7wIlDMx1MH9YfPqgKhA/Q=="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"
+      integrity="sha512-lIKG1kC5TMb1Zx32vdz1n31YJMZRknVY20U9MJ28hD3y2c0OKN0Ce5NhJji78v8zX5UOSsm+MTBOcJt7yMBnSg=="
+      crossorigin="anonymous"
+    ></script>
+    <!-- <script type="module" src="./VRButton.js"></script> -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.120.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.120.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="./scene.js"></script>
+  </head>
+  <body>
+    <div id="renderCanvas"></div>
+  </body>
+</html>
+<!-- # WebVR Red Ocean by Three.js (https://user-images.githubusercontent.com/9309605/111953306-c762e800-8b29-11eb-9dc6-19335f21ae90.jpg)
+[Demo Page](https://followthedarkside.github.io/webvr-threejs-red-ocean/)
+[three.js webgl - shaders - ocean](https://threejs.org/examples/webgl_shaders_ocean.html)
+ -->

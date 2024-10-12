@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Swell</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Custom style to vertically center the form */
+      .full-height {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .processing-message {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container full-height p-4 d-flex flex-column">
+      <h4 class="mb-3" id="formHeader">I dream of a climate future where...</h4>
+      <form id="textForm" class="w-100" style="max-width: 500px">
+        <div class="form-group">
+          <textarea
+            id="textInput"
+            class="form-control"
+            rows="5"
+            placeholder="Enter your text"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          Submit
+        </button>
+      </form>
+      <!-- Processing message -->
+      <div id="processingMessage" class="processing-message">Processing...</div>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="thankYouModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="thankYouModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="thankYouModalLabel">
+              Submission Successful
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- The explanation returned by ChatGPT will go here -->
+            <div id="modalWaveSpeed"></div>
+            <div id="modalDisturbance"></div>
+            <div
+              id="modalColors"
+              class="d-flex flex-row justify-content-center"
+            >
+              <div id="modalColor1" class="p-3"></div>
+              <div id="modalColor2" class="p-3"></div>
+              <div id="modalColor3" class="p-3"></div>
+            </div>
+            <div id="modalExplanation"></div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div
+      class="modal fade"
+      id="errorModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="errorModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="errorModalLabel">Submission Error</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            There was an error with your submission. Please try again.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      const form = document.getElementById("textForm");
+      const textInput = document.getElementById("textInput");
+      const submitButton = form.querySelector("button[type='submit']");
+      const processingMessage = document.getElementById("processingMessage");
+      const formHeader = document.getElementById("formHeader");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Fetch the value of the input before clearing it
+        const content = textInput.value;
+
+        // Clear the input field after fetching the value
+        textInput.value = "";
+
+        // Show processing message and hide form elements
+        processingMessage.style.display = "block";
+        form.classList.add("hidden"); // Hide the form
+        formHeader.classList.add("hidden"); // Hide the form header
+
+        // Send the data to the server
+        try {
+          const response = await fetch("/api/submit", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ content }), // Send the content
+          });
+
+          const responseData = await response.json();
+
+          // After processing, show the thank you modal and re-enable the form
+          if (response.ok && responseData.explanation) {
+            modalExplanation.textContent = responseData.explanation; // Update modal with explanation
+            let modalColor1 = document.getElementById("modalColor1");
+            let modalColor2 = document.getElementById("modalColor2");
+            let modalColor3 = document.getElementById("modalColor3");
+            let modalWaveSpeed = document.getElementById("modalWaveSpeed");
+            let modalDisturbance = document.getElementById("modalDisturbance");
+            console.log(modalColor1, responseData.color1);
+            modalColor1.style.backgroundColor = responseData.color1;
+            modalColor2.style.backgroundColor = responseData.color2;
+            modalColor3.style.backgroundColor = responseData.color3;
+            modalWaveSpeed.textContent = `Wave Speed: ${responseData.waveSpeed}`;
+            modalDisturbance.textContent = `Disturbance: ${responseData.disturbance}`;
+            $("#thankYouModal").modal("show");
+          } else {
+            console.error("Submission failed");
+            $("#errorModal").modal("show");
+          }
+        } catch (error) {
+          console.error("Error submitting:", error);
+          $("#errorModal").modal("show");
+        } finally {
+          // Hide the processing message and show the form again
+          processingMessage.style.display = "none";
+          form.classList.remove("hidden"); // Show the form
+          formHeader.classList.remove("hidden"); // Show the form header
+        }
+      });
+
+      // Reset form on closing any modal
+      $("#errorModal, #thankYouModal").on("hidden.bs.modal", function (e) {
+        form.reset(); // Reset the form when any modal is closed
+      });
+    </script>
+  </body>
+</html>
