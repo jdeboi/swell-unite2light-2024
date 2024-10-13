@@ -125,7 +125,7 @@ function checkForNewSubmission() {
   }
 }
 function processSubmission(data) {
-  console.log("processing submission...");
+  // console.log("processing submission...");
   try {
     if (
       !data ||
@@ -210,7 +210,7 @@ function sendSubmissionsToAPI() {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log("Processed data received from API:", data);
+      // console.log("Processed data received from API:", data);
       processCollective(data); // Update the scene with the processed result
     })
     .catch((error) => {

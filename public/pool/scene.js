@@ -13,7 +13,7 @@ window.addEventListener("load", function () {
   socket = io();
 
   socket.on("dreamUpdated", (data) => {
-    console.log("New dream received", data);
+    // console.log("New dream received", data);
   });
 });
 

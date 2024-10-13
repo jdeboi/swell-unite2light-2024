@@ -40,7 +40,7 @@ function drawLinearGradient(
 ) {
   let extendedColors = [...colors, colors[0]]; // Create a local extended array
   let segmentHeight = h / (extendedColors.length - 1);
-  let offset = (frameCount * 2) % h;
+  let offset = (frameCount * 2 * frameScaler) % h;
 
   push();
   translate(x, y);

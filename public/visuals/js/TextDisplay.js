@@ -1,58 +1,66 @@
+const MAXWIDTH_WORDS = 300;
+
 class TextDisplay {
   constructor(x, y, sz = 20) {
-    this.txt = phrases[0];
-    this.collectiveTxt = phrases[1];
+    this.txt = "abc";
+    this.collectiveTxt = "def";
     this.startTime = millis();
     this.isFinished = false;
     this.phraseIndex = 0;
     this.x = x;
     this.y = y;
     this.sz = sz;
+    this.startedSubmission = false;
   }
 
-  displayPrompt() {
-    push();
-    translate(this.x, this.y);
-    textSize(this.sz);
-    fill(255);
-    textAlign(CENTER, CENTER);
-    text("I dream of a climate future where...", 0, 0);
-    pop();
+  displayPrompt(pg) {
+    pg.push();
+    pg.translate(this.x, this.y);
+    pg.textSize(this.sz);
+    pg.fill(255);
+    pg.textAlign(CENTER, CENTER);
+    pg.text("I dream of a climate future where...", 0, 0);
+    pg.pop();
   }
 
-  displayMessage(txt) {
-    const alphaVal = 255 / 2 + (255 / 2) * sin(frameCount / 30);
+  displayMessage(txt, pg, isFlashing = false) {
+    const alphaVal = 255;
+    if (isFlashing) {
+      255 / 2 + (255 / 2) * sin((frameCount * frameScaler) / 30);
+    }
 
-    textSize(this.sz * 0.75);
+    pg.textSize(this.sz * 0.75);
 
-    push();
-    translate(this.x, this.y);
+    pg.push();
+    pg.translate(this.x, this.y);
 
-    fill(0, map(alphaVal, 0, 255, 0, 100));
-    noStroke();
-    rectMode(CENTER);
-    rect(0, 8, textWidth(txt) + 36, this.sz + 16, this.sz);
+    pg.fill(0, map(alphaVal, 0, 255, 0, 100));
+    pg.noStroke();
+    pg.rectMode(CENTER);
+    pg.rect(0, 8, MAXWIDTH_WORDS + 36, this.sz + 16, this.sz);
 
-    fill(255, alphaVal);
-    textAlign(CENTER, CENTER);
-    text(txt, 0, 0);
-    pop();
+    pg.fill(255, alphaVal);
+    pg.textAlign(CENTER, CENTER);
+    pg.text(txt, 0, 0);
+    pg.pop();
   }
 
-  displayCollective() {
-    this.displayBG(true);
+  displayCollective(pg) {
+    this.displayBG(true, pg);
   }
 
-  displaySubmission() {
-    this.displayBG(false);
+  displaySubmission(pg) {
+    if (this.startedSubmission && !this.isFinished) {
+      this.displayBG(false, pg);
+    }
   }
 
-  display(isCollective) {
-    push();
-    translate(this.x, this.y + 60);
-    textSize(this.sz);
-    fill(255);
-    textAlign(CENTER, CENTER);
+  display(isCollective, pg) {
+    pg.push();
+    pg.translate(this.x, this.y + 60);
+    pg.textSize(this.sz);
+    pg.fill(255);
+    pg.textAlign(CENTER, CENTER);
     let words;
     if (isCollective) {
       words = this.getWords(this.collectiveTxt);
@@ -61,15 +69,15 @@ class TextDisplay {
     }
 
     if (words) {
-      text(words, 0, 0);
+      pg.text(words, 0, 0);
     }
-    pop();
+    pg.pop();
   }
 
-  displayBG(isCollective) {
-    push();
+  displayBG(isCollective, pg) {
+    pg.push();
     // translate(this.x, this.y + 60);
-    translate(0, 60);
+    pg.translate(0, 60);
     let words;
     if (isCollective) {
       words = this.getWords(this.collectiveTxt);
@@ -78,9 +86,9 @@ class TextDisplay {
     }
 
     if (words) {
-      this.displayMessage(words);
+      this.displayMessage(words, pg);
     }
-    pop();
+    pg.pop();
   }
 
   getWords(txt) {
@@ -88,7 +96,7 @@ class TextDisplay {
       return "";
     }
 
-    const maxWidth = 600;
+    textSize(this.sz / 2);
     const batchTime = 2000; // 4 seconds
     const currentTime = millis() - this.startTime;
 
@@ -97,13 +105,14 @@ class TextDisplay {
 
     // Get all words as an array
     const words = txt.split(" ");
+
     let displayedWords = [];
     let currentWidth = 0;
 
     // Calculate which batch of words to display
     for (let i = 0; i < words.length; i++) {
       let wordWidth = textWidth(words[i] + " "); // Measure the width of the word plus a space
-      if (currentWidth + wordWidth <= maxWidth) {
+      if (currentWidth + wordWidth <= MAXWIDTH_WORDS * 0.44) {
         displayedWords.push(words[i]);
         currentWidth += wordWidth;
       } else {
@@ -120,11 +129,18 @@ class TextDisplay {
 
     if (wordsToShow.length == 0) {
       this.isFinished = true;
+      this.startedSubmission = false;
       // this.nextWord();
       return "";
     }
 
     return wordsToShow.join(" ");
+  }
+
+  startSubmission() {
+    this.isFinished = false;
+    this.startTime = millis();
+    this.startedSubmission = true;
   }
 
   nextWord() {

@@ -27,7 +27,7 @@ class Gradient {
 
     let extendedColors = [...colors, colors[0]]; // Create a local extended array
     let segRad = (2 * PI) / extendedColors.length;
-    let offset = ((frameCount * 2) % 2) * PI;
+    let offset = ((frameCount * 2 * frameScaler) % 2) * PI;
     let segmentHeight = h / (extendedColors.length - 1);
 
     pg.push();
@@ -89,7 +89,7 @@ class Gradient {
 
     let extendedColors = [...colors, colors[0]]; // Create a local extended array
     let segmentHeight = h / (extendedColors.length - 1);
-    let offset = (frameCount * 2) % h;
+    let offset = (frameCount * 2 * frameScaler) % h;
 
     pg.push();
     pg.translate(x, y); //, z);

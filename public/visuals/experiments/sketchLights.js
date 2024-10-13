@@ -84,9 +84,9 @@ function draw() {
     //   50 * sin(frameCount * 0.01);
 
     let lightX =
-      light.x + 100 * sin(frameCount * 0.04 + light.x + noise(offset.x)); // Scale noise to a range
+      light.x + 100 * sin(frameCount * frameScaler * 0.04 + light.x + noise(offset.x)); // Scale noise to a range
     let lightY =
-      light.y + 100 * cos(frameCount * 0.03 + light.y + noise(offset.y));
+      light.y + 100 * cos(frameCount *frameScaler * 0.03 + light.y + noise(offset.y));
     let lightZ = lightDistance;
 
     // Set the point light with calculated positions

@@ -13,6 +13,12 @@ let transitionStarted = false;
 let transitionTime = 0;
 let qrcode;
 
+let pMapper;
+let quadMap;
+let pg;
+
+const frameScaler = 1;
+
 ////////////////////
 // MODE
 const PROCESSING = "processing";
@@ -38,9 +44,18 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  pg = createGraphics(height, height);
+
+  textFont(font);
+  pg.textFont(font);
+
   noiseSeed(2);
   textFont(font, 50);
+
+  pMapper = createProjectionMapper(this);
+  quadMap = pMapper.createQuadMap(height, height);
+  pMapper.load("assets/map.json");
 
   let latestSubmission = submissions[lastProcessSubmission];
   for (let i = 0; i < 3; i++) {
@@ -51,8 +66,7 @@ function setup() {
   socket = io();
 
   socket.on("startProcessing", () => {
-    console.log("start processing");
-
+    // console.log("start processing");
     // changeMode(PROCESSING);
   });
 
@@ -62,12 +76,12 @@ function setup() {
   });
 
   socket.on("newSubmission", (data) => {
-    console.log("New submission received", data);
+    // console.log("New submission received", data);
     processSubmission(data);
   });
 
   socket.on("collectiveData", (data) => {
-    console.log("New collective received", data);
+    // console.log("New collective received", data);
     processCollective(data);
   });
 
@@ -78,86 +92,104 @@ function setup() {
 
   qrcode = invertImage(qrcode);
 
-  sun = new Sun(width / 2, height * 0.25, 80);
+  sun = new Sun(pg.width / 2, pg.height * 0.25, 80);
   beach.init();
   colors = [color(88, 91, 255), color(237, 12, 255), color(114, 238, 255)];
 
-  backgroundGrad = new Gradient(colors, 0, 0, -200, width, height, false);
+  backgroundGrad = new Gradient(colors, 0, 0, -200, pg.width, pg.height, false);
 
   // circleGrad = new Gradient(colors, width / 2, 200, 0, 300, 300, true, 100);
   centerGrad = new Gradient(
     colors,
-    width / 2 - 100,
+    pg.width / 2 - 100,
     0,
     0,
     200,
-    height,
+    pg.height,
     true,
     100
   );
 
-  textDisplay = new TextDisplay(width / 2, height * 0.45, 40);
+  textDisplay = new TextDisplay(pg.width / 2, pg.height * 0.45, 40);
 }
 
 function draw() {
   background(0);
-
-  backgroundGrad.display(this);
+  noStroke();
+  //const pg = this;
+  pg.push();
+  pg.background(0);
+  // pg.translate(-pg.width / 2, -pg.height / 2);
+  backgroundGrad.display(pg);
 
   // circleGrad.drawCircleGradient(colors, this);
 
-  centerGrad.display(this);
-  sun.display();
+  centerGrad.display(pg);
+  sun.display(pg);
 
   switch (mode) {
     case PROCESSING:
-      displayProcessingSubmission();
+      displayProcessingSubmission(pg);
       break;
     case COLLECTIVE:
-      displayCollective();
+      displayCollective(pg);
       break;
     case SUBMISSION:
-      displaySubmission();
+      displaySubmission(pg);
       break;
     case ERROR:
-      displayError();
+      displayError(pg);
       break;
     default:
-      displayCollective();
+      displayCollective(pg);
       break;
   }
 
-  displayFrameRate();
+  // displayFrameRate(pg);
 
   const sz = 80;
   const bord = 5;
-  displayQRCode(width / 2 - sz / 2 - bord, sun.y - sz / 2 - bord, sz, bord);
+  displayQRCode(
+    pg,
+    pg.width / 2 - sz / 2 - bord,
+    sun.y - sz / 2 - bord,
+    sz,
+    bord
+  );
 
-  displayModeText();
+  // displayModeText();
   checkForNewSubmission();
+  pg.pop();
+
+  // push();
+  // translate(-width / 2, -height / 2);
+  // image(pg, 0, 0);
+  // pop();
+  quadMap.displayTexture(pg);
 }
 
-function displayModeText() {
-  fill(0);
-  textSize(20);
-  noStroke();
-  text(mode, 100, 100);
+function displayModeText(pg) {
+  pg.fill(0);
+  pg.textSize(20);
+  pg.noStroke();
+  pg.text(mode, 100, 100);
 }
 
-function displayProcessingSubmission() {
+function displayProcessingSubmission(pg) {
   if (millis() - modeTime > 20000) {
     // too much time has passed
     changeMode(ERROR);
     return;
   }
   transitionColors(nextColors);
-  sun.displayRays(0);
-  beach.display(0, 0.5, 0.5);
-  textDisplay.displayMessage("processing submission");
+  sun.displayRays(pg, 0);
+  beach.display(0, 0.5, 0.5, pg);
+  textDisplay.displayMessage("processing submission", pg);
 }
 
-function displaySubmission() {
-  if (millis() - modeTime > 10000) {
+function displaySubmission(pg) {
+  let dt = millis() - modeTime;
+  if (textDisplay.isFinished && dt > 10000) {
     changeMode(COLLECTIVE);
     finishedDisplayingSubmission();
     return;
@@ -165,33 +197,35 @@ function displaySubmission() {
   const submission = getSubmissionToProcess();
 
   transitionColors(submission.colors);
-  sun.displayRays(0);
+  sun.displayRays(pg, 0);
 
   beach.display(
     submission.disturbance,
     submission.waveSpeed,
-    submission.waveSpeed
+    submission.waveSpeed,
+    pg
   );
 
-  textDisplay.displayPrompt();
+  textDisplay.displayPrompt(pg);
 
-  push();
+  pg.push();
   // translate(0, 60);
-  textDisplay.displaySubmission();
-  pop();
+  textDisplay.displaySubmission(pg);
+  pg.pop();
 }
 
-function displayCollective() {
+function displayCollective(pg) {
   transitionColors(collective.colors);
 
   beach.display(
     collective.disturbance,
     collective.waveSpeed,
-    collective.waveSpeed
+    collective.waveSpeed,
+    pg
   );
   beach.recycleWords();
 
-  textDisplay.displayPrompt();
+  textDisplay.displayPrompt(pg);
 }
 
 function displayError() {
@@ -201,16 +235,16 @@ function displayError() {
     return;
   }
   transitionColors(nextColors);
-  sun.displayRays(0);
-  beach.display(0, 0.5, 0.5);
-  textDisplay.displayMessage("error processing");
+  sun.displayRays(0, pg);
+  beach.display(0, 0.5, 0.5, pg);
+  textDisplay.displayMessage("error processing", pg);
 }
 
-function displayFrameRate() {
-  fill(255, 0, 0);
-  noStroke();
-  textFont(font, 14);
-  text("FPS: " + round(frameRate()), 20, 20);
+function displayFrameRate(pg) {
+  pg.fill(255, 0, 0);
+  pg.noStroke();
+  pg.textFont(font, 14);
+  pg.text("FPS: " + round(frameRate()), 20, 20);
 }
 
 function mousePressed() {
@@ -218,20 +252,20 @@ function mousePressed() {
   startColorTransition();
 }
 
-function displayQRCode(x, y, sz, bord = 10) {
-  push();
-  translate(x, y);
+function displayQRCode(pg, x, y, sz, bord = 10) {
+  pg.push();
+  pg.translate(x, y);
 
-  translate(bord, bord);
+  pg.translate(bord, bord);
   // fill(255, 0, 0, 10);
   // noStroke();
-  noFill();
-  stroke(255, 255 / 2 + (255 / 2) * sin(frameCount / 30));
-  strokeWeight(3);
-  rect(-bord, -bord, sz + bord * 2, sz + bord * 2);
+  pg.noFill();
+  pg.stroke(255, 255 / 2 + (255 / 2) * sin((frameCount * frameScaler) / 30));
+  pg.strokeWeight(3);
+  pg.rect(-bord, -bord, sz + bord * 2, sz + bord * 2, 10);
 
-  image(qrcode, 0, 0, sz, sz);
-  pop();
+  pg.image(qrcode, 0, 0, sz, sz);
+  pg.pop();
 }
 
 function randomizeColors() {
@@ -273,11 +307,12 @@ function initProcessing() {
   }
 }
 function initSubmission() {
-  console.log("initializing submission");
+  // console.log("initializing submission");
   setNextSubmission();
   beach.clearWordWaves();
   let latestSubmission = submissions[lastProcessSubmission];
   textDisplay.txt = latestSubmission.text;
+  textDisplay.startSubmission();
 }
 
 function initError() {
@@ -310,19 +345,38 @@ function changeMode(newMode) {
   startColorTransition();
 }
 
-function keyPressed() {
-  // if (key == "p") {
-  //   terrain.printColorHex();
-  // }
+// function keyPressed() {
+//   // if (key == "p") {
+//   //   terrain.printColorHex();
+//   // }
 
-  if (key == "c") {
-    changeMode(COLLECTIVE);
-  } else if (key == "s") {
-    changeMode(SUBMISSION);
-  } else if (key == "p") {
-    changeMode(PROCESSING);
-  } else if (key == "e") {
-    changeMode(ERROR);
+//   if (key == "c") {
+//     changeMode(COLLECTIVE);
+//   } else if (key == "s") {
+//     changeMode(SUBMISSION);
+//   } else if (key == "p") {
+//     changeMode(PROCESSING);
+//   } else if (key == "e") {
+//     changeMode(ERROR);
+//   }
+// }
+
+function keyPressed() {
+  switch (key) {
+    case "c":
+      pMapper.toggleCalibration();
+      break;
+    case "f":
+      let fs = fullscreen();
+      fullscreen(!fs);
+      break;
+    case "l":
+      pMapper.load("assets/map.json");
+      break;
+
+    case "s":
+      pMapper.save("map.json");
+      break;
   }
 }
 
@@ -351,4 +405,16 @@ function invertImage(img) {
   // We're finished working with pixels so update them
   img.updatePixels();
   return img;
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  sun.x = pg.width / 2;
+  sun.y = pg.height * 0.25;
+  backgroundGrad.w = pg.width;
+  backgroundGrad.h = pg.height;
+  centerGrad.x = pg.width / 2 - 100;
+  centerGrad.h = pg.height;
+  textDisplay.x = pg.width / 2;
+  textDisplay.y = pg.height * 0.45;
 }

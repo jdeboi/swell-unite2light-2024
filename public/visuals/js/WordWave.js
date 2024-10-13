@@ -49,12 +49,12 @@ class WordWave {
       sin(
         -frameCount / waveSpeed +
           this.seed +
-          (3 * this.ypos + x / (7 + 3 * sin(frameCount / 300))) / 150
+          (3 * this.ypos + x / (7 + 3 * sin(frameCount * frameScaler / 300))) / 150
       );
 
     let noiseY = noise(
       this.ypos / (height / 2),
-      this.seed / 20 - frameCount / noiseSpeed + x / (height / 1.5)
+      this.seed / 20 - frameCount * frameScaler / noiseSpeed + x / (height / 1.5)
     );
     noiseY = noiseScaler * map(noiseY, 0, 1, -1, 1);
 
@@ -89,11 +89,11 @@ class WordWave {
     return true;
   }
 
-  display(letterSpacing = DEFAULTSPACING) {
+  display(pg, letterSpacing = DEFAULTSPACING) {
     // if (!this.hasStarted) return;
     randomSeed(this.id);
     for (let i = 0; i < this.txt.length; i++) {
-      this.displayWaveLetter(i, letterSpacing);
+      this.displayWaveLetter(pg, i, letterSpacing);
     }
   }
 
@@ -181,7 +181,7 @@ class WordWave {
     }
   }
 
-  displayWaveLetter(i, letterSpacing) {
+  displayWaveLetter(pg, i, letterSpacing) {
     // if (!this.hasStarted) {
     //   return;
     // }
@@ -199,13 +199,13 @@ class WordWave {
         true
       );
 
-      fill(col);
+      pg.fill(col);
     } else {
-      fill(255);
+      pg.fill(255);
     }
 
     let x = this.getXPos(i, letterSpacing);
-    textSize(TXTSIZE);
-    text(this.txt[i], x, this.txtHeights[i].y);
+    pg.textSize(TXTSIZE);
+    pg.text(this.txt[i], x, this.txtHeights[i].y);
   }
 }
