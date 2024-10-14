@@ -12,6 +12,7 @@ let nextColors = [];
 let transitionStarted = false;
 let transitionTime = 0;
 let qrcode;
+let wall;
 
 let pMapper;
 let quadMap;
@@ -39,13 +40,16 @@ const collective = {
 
 function preload() {
   font = loadFont("assets/AdobeClean-Light.otf");
+  wall = loadImage("assets/wall.png");
   beach = new Beach();
   qrcode = loadImage("assets/qrcode.png");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
-  pg = createGraphics(height, height);
+  const aspect = 890 / 775;
+  const w = width / aspect;
+  pg = createGraphics(w, height);
 
   textFont(font);
   pg.textFont(font);
@@ -54,7 +58,7 @@ function setup() {
   textFont(font, 50);
 
   pMapper = createProjectionMapper(this);
-  quadMap = pMapper.createQuadMap(height, height);
+  quadMap = pMapper.createQuadMap(pg.width, pg.height);
   pMapper.load("assets/map.json");
 
   let latestSubmission = submissions[lastProcessSubmission];
@@ -115,6 +119,7 @@ function setup() {
 
 function draw() {
   background(0);
+  image(wall, -width / 2, -height / 2, wall.width * 0.5, wall.height * 0.5);
   noStroke();
   //const pg = this;
   pg.push();

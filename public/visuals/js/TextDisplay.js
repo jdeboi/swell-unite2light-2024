@@ -77,7 +77,7 @@ class TextDisplay {
   displayBG(isCollective, pg) {
     pg.push();
     // translate(this.x, this.y + 60);
-    pg.translate(0, 60);
+    pg.translate(0, 70);
     let words;
     if (isCollective) {
       words = this.getWords(this.collectiveTxt);

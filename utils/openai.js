@@ -24,7 +24,7 @@ export const getChatGPTResponse = async (content) => {
       - "text": the original text.
       - "disturbance": a value between 0 and 1, representing the turbidity of the water based on the level of despair vs hopefulness in the response (lower values are clearer, higher values are more murky).
       - "waveSpeed": a value between 0 and 1, where slower speeds are hopeful and calmer, and faster speeds represent urgency or despair.
-      - "colors": an array of 3 colors, represented as hex codes, that visually express the theme of the response. It's ok to use a similar hue for all colors, sometimes make them distinct to create a nice palette, although the colors should still relate to the response's theme (e.g., water, family, politics, nature). If the text isn't coherent or related to the prompt, randomize the colors.
+      - "colors": an array of 3 colors, represented as hex codes, that visually express the theme of the response. Try to make the colors distinct to create a nice palette that still relates to the response's theme (e.g., water, family, politics, nature). If the text isn't coherent or related to the prompt, randomize the colors.
       - "explanation": a brief sentence explaining how the colors relate to the theme of the response.`,
     },
     {
