@@ -24,25 +24,31 @@ class TextDisplay {
   }
 
   displayMessage(txt, pg, isFlashing = false) {
-    const alphaVal = 255;
+    const txtSz = 20;
+    let alphaVal = 255;
     if (isFlashing) {
-      255 / 2 + (255 / 2) * sin((frameCount * frameScaler) / 30);
+      alphaVal = 255 / 2 + (255 / 2) * sin((frameCount * frameScaler) / 30);
     }
 
-    pg.textSize(this.sz * 0.75);
+    pg.textSize(txtSz);
 
     pg.push();
-    pg.translate(this.x, this.y);
+    pg.translate(this.x, this.y + 55);
 
     pg.fill(0, map(alphaVal, 0, 255, 0, 100));
     pg.noStroke();
     pg.rectMode(CENTER);
-    pg.rect(0, 8, MAXWIDTH_WORDS + 36, this.sz + 16, this.sz);
+    pg.rect(0, 5, 300, txtSz + 16, txtSz);
 
     pg.fill(255, alphaVal);
     pg.textAlign(CENTER, CENTER);
     pg.text(txt, 0, 0);
     pg.pop();
+  }
+
+  displaySubmit(pg) {
+    const txt = "scan QR code to respond";
+    this.displayMessage(txt, pg, true);
   }
 
   displayCollective(pg) {
@@ -77,7 +83,7 @@ class TextDisplay {
   displayBG(isCollective, pg) {
     pg.push();
     // translate(this.x, this.y + 60);
-    pg.translate(0, 70);
+    //pg.translate(0, 70);
     let words;
     if (isCollective) {
       words = this.getWords(this.collectiveTxt);

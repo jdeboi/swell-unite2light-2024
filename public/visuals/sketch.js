@@ -114,12 +114,12 @@ function setup() {
     100
   );
 
-  textDisplay = new TextDisplay(pg.width / 2, pg.height * 0.45, 40);
+  textDisplay = new TextDisplay(pg.width / 2, pg.height * 0.41, 40);
 }
 
 function draw() {
   background(0);
-  image(wall, -width / 2, -height / 2, wall.width * 0.5, wall.height * 0.5);
+  // image(wall, -width / 2, -height / 2, wall.width * 0.5, wall.height * 0.5);
   noStroke();
   //const pg = this;
   pg.push();
@@ -231,6 +231,10 @@ function displayCollective(pg) {
   beach.recycleWords();
 
   textDisplay.displayPrompt(pg);
+  // pg.push();
+  // pg.translate(0, 47);
+  textDisplay.displaySubmit(pg);
+  // pg.pop();
 }
 
 function displayError() {
@@ -421,5 +425,5 @@ function windowResized() {
   centerGrad.x = pg.width / 2 - 100;
   centerGrad.h = pg.height;
   textDisplay.x = pg.width / 2;
-  textDisplay.y = pg.height * 0.45;
+  textDisplay.y = pg.height * 0.41;
 }

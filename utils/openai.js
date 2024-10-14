@@ -23,9 +23,9 @@ export const getChatGPTResponse = async (content) => {
       The response should include the following fields:
       - "text": the original text.
       - "disturbance": a value between 0 and 1, representing the turbidity of the water based on the level of despair vs hopefulness in the response (lower values are clearer, higher values are more murky).
-      - "waveSpeed": a value between 0 and 1, where slower speeds are hopeful and calmer, and faster speeds represent urgency or despair.
+      - "waveSpeed": a value between 0 and 1, where wave speed is determined by the level of urgency or dynamic language in the response. Faster speeds represent urgency or action-oriented language, while slower speeds represent reflection, calmness, or future vision.
       - "colors": an array of 3 colors, represented as hex codes, that visually express the theme of the response. Try to make the colors distinct to create a nice palette that still relates to the response's theme (e.g., water, family, politics, nature). If the text isn't coherent or related to the prompt, randomize the colors.
-      - "explanation": a brief sentence explaining how the colors relate to the theme of the response.`,
+      - "explanation": a brief sentence explaining how the colors, disturbance, and wave speed relate to the theme of the response.`,
     },
     {
       role: "user",
@@ -60,9 +60,9 @@ export const getChatGPTCollectiveResponse = async (submissions) => {
       The response should include the following fields:
       - "text": a very brief, poetic summary of all the submissions.
       - "disturbance": a value between 0 and 1, representing the average turbidity of the water based on the level of despair vs hopefulness in the response (lower values are clearer, higher values are more murky).
-      - "waveSpeed": a value between 0 and 1, representing the average speed of the water where slower speeds are hopeful and calmer, and faster speeds represent urgency or despair.
+      - "waveSpeed": a value between 0 and 1 where wave speed is determined by the level of urgency or dynamic language in the responses. Faster speeds represent urgency or action-oriented language, while slower speeds represent reflection, calmness, or future vision. The number represents the average wave speed across all submissions.
       - "colors": an array of 3 colors, represented as hex codes, that visually express the most prevalent themes of the responses. They should create a distinct, visually pleasing palette. 
-      - "explanation": a brief sentence explaining how the colors relate to the theme of the responses.`,
+      - "explanation": a brief sentence explaining how the colors, disturbance, and wave speed relate to the theme of the responses.`,
     },
     {
       role: "user",

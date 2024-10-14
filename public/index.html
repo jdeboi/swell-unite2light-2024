@@ -11,7 +11,10 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <style>
       /* Custom style to vertically center the form */
       .full-height {
@@ -29,6 +32,19 @@
       }
       .hidden {
         display: none;
+      }
+
+      .slider-container {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+      }
+      .icon {
+        font-size: 1.5rem;
+        margin: 0 10px;
+      }
+      .slider {
+        width: 100%;
       }
     </style>
   </head>
@@ -74,16 +90,50 @@
           </div>
           <div class="modal-body">
             <!-- The explanation returned by ChatGPT will go here -->
+            <!-- <div class="slider-container">
+              <span class="icon"><i class="fa-solid fa-bars"></i></span>
+              <input
+                type="range"
+                id="waveSpeed"
+                min="0"
+                max="1"
+                step="0.1"
+                value="0.4"
+                class="slider"
+              />
+              <span class="icon"
+                ><i class="fas fa-water fa-flip-horizontal"></i
+              ></span>
+            </div>
+            <div class="slider-container">
+              <span class="icon"><i class="fa-solid fa-bars"></i></span>
+              <input
+                type="range"
+                id="disturbance"
+                min="0"
+                max="1"
+                step="0.1"
+                value="0.3"
+                class="slider"
+              />
+              <span class="icon"><i class="fas fa-wind"></i></span>
+            </div>
+
             <div id="modalWaveSpeed"></div>
-            <div id="modalDisturbance"></div>
-            <div
+            <div id="modalDisturbance"></div> -->
+            <!-- <div
               id="modalColors"
               class="d-flex flex-row justify-content-center"
             >
               <div id="modalColor1" class="p-3"></div>
               <div id="modalColor2" class="p-3"></div>
               <div id="modalColor3" class="p-3"></div>
-            </div>
+            </div> -->
+            <div
+              id="modalColors"
+              class="mb-3 d-flex flex-row justify-content-center"
+            ></div>
+
             <div id="modalExplanation"></div>
           </div>
           <div class="modal-footer">
@@ -143,6 +193,8 @@
       const submitButton = form.querySelector("button[type='submit']");
       const processingMessage = document.getElementById("processingMessage");
       const formHeader = document.getElementById("formHeader");
+      const waveSpeedSlider = document.getElementById("waveSpeed");
+      const disturbanceSlider = document.getElementById("disturbance");
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -173,17 +225,25 @@
           // After processing, show the thank you modal and re-enable the form
           if (response.ok && responseData.explanation) {
             modalExplanation.textContent = responseData.explanation; // Update modal with explanation
-            let modalColor1 = document.getElementById("modalColor1");
-            let modalColor2 = document.getElementById("modalColor2");
-            let modalColor3 = document.getElementById("modalColor3");
-            let modalWaveSpeed = document.getElementById("modalWaveSpeed");
-            let modalDisturbance = document.getElementById("modalDisturbance");
-            console.log(modalColor1, responseData.color1);
-            modalColor1.style.backgroundColor = responseData.color1;
-            modalColor2.style.backgroundColor = responseData.color2;
-            modalColor3.style.backgroundColor = responseData.color3;
-            modalWaveSpeed.textContent = `Wave Speed: ${responseData.waveSpeed}`;
-            modalDisturbance.textContent = `Disturbance: ${responseData.disturbance}`;
+            // let modalColor1 = document.getElementById("modalColor1");
+            // let modalColor2 = document.getElementById("modalColor2");
+            // let modalColor3 = document.getElementById("modalColor3");
+            // let modalWaveSpeed = document.getElementById("modalWaveSpeed");
+            // let modalDisturbance = document.getElementById("modalDisturbance");
+            // modalColor1.style.backgroundColor = responseData.color1;
+            // modalColor2.style.backgroundColor = responseData.color2;
+            // modalColor3.style.backgroundColor = responseData.color3;
+
+            let modalColors = document.getElementById("modalColors");
+            modalColors.style.background = `linear-gradient(to right, ${responseData.color1}, ${responseData.color2}, ${responseData.color3})`;
+            modalColors.style.height = "50px"; // You can adjust this value
+            modalColors.style.width = "100%";
+
+            // modalWaveSpeed.textContent = `Wave Speed: ${responseData.waveSpeed}`;
+            // modalDisturbance.textContent = `Disturbance: ${responseData.disturbance}`;
+            // waveSpeedSlider.value = responseData.waveSpeed;
+            // disturbanceSlider.value = responseData.disturbance;
+
             $("#thankYouModal").modal("show");
           } else {
             console.error("Submission failed");
