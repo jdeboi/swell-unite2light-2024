@@ -88,7 +88,7 @@ export const getChatGPTCollectiveResponse = async (submissions) => {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // You can adjust to a different model if needed
+      model: "gpt-4o-mini", // You can adjust to a different model if needed
       messages: messages,
       temperature: 0.7, // Optional: Adjust the creativity level
     });
@@ -135,7 +135,7 @@ export const getChatGPTScore = async (content) => {
   ];
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo", // Update model as needed
+    model: "gpt-4o-mini", // Update model as needed
     messages: messages,
   });
 

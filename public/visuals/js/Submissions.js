@@ -152,8 +152,7 @@ function processSubmission(data) {
     submissions.push(latestSubmission);
 
     sendSubmissionsToAPI();
-
-    textDisplay.txt = latestSubmission.text;
+    
   } catch (e) {
     console.log("error on processing submssion data", e);
     // changeMode(ERROR);
