@@ -22,7 +22,7 @@ export const getChatGPTResponse = async (content) => {
       content: `You are an assistant that analyzes text about climate future dreams and returns JSON-formatted data.
       The response should include the following fields:
       - "text": the original text.
-      - "disturbance": a value between 0 and 1, representing the turbidity of the water based on the level of despair vs hopefulness in the response (lower values are clearer, higher values are more murky).
+      - "disturbance": a value between 0 and 1, representing the choppyness of the water based on the level of despair vs hopefulness in the response (lower values are clearer, higher values are more murky).
       - "waveSpeed": a value between 0 and 1, where wave speed is determined by the level of urgency or dynamic language in the response. Faster speeds represent urgency or action-oriented language, while slower speeds represent reflection, calmness, or future vision.
       - "colors": an array of 3 colors, represented as hex codes, that visually express the theme of the response. Try to make the colors distinct to create a nice palette that still relates to the response's theme (e.g., water, family, politics, nature). If the text isn't coherent or related to the prompt, randomize the colors.
       - "explanation": a brief sentence explaining how the colors, disturbance, and wave speed relate to the theme of the response.`,
@@ -35,15 +35,31 @@ export const getChatGPTResponse = async (content) => {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // You can adjust to a different model if needed
+      model: "gpt-3.5-turbo",
       messages: messages,
-      temperature: 0.7, // Optional: Adjust the creativity level
+      temperature: 0.7,
     });
 
-    const response = completion.choices[0].message.content.trim();
-    console.log("gpt response", response);
+    let response = completion.choices[0].message.content.trim();
+    console.log("Raw GPT Response:", response);
 
-    const parsedResponse = JSON.parse(response);
+    // Log the problematic section of the response to investigate further
+    console.log(
+      "Problematic section (position 280-320):",
+      response.substring(280, 320)
+    );
+
+    // Check if there are any invisible characters
+    const charArray = response.split("");
+    charArray.forEach((char, index) => {
+      console.log(`Character at index ${index}:`, char.charCodeAt(0));
+    });
+
+    // Remove trailing commas before parsing
+    response = response.replace(/,(\s*[}\]])/g, "$1"); // Remove any commas before closing braces
+    console.log("Fixed Response:", response);
+
+    const parsedResponse = JSON.parse(response); // Parse the fixed response
     return parsedResponse;
   } catch (error) {
     console.error("Error parsing JSON response:", error);
@@ -59,7 +75,7 @@ export const getChatGPTCollectiveResponse = async (submissions) => {
       content: `You are an assistant that analyzes an array of text submissions about climate future dreams.  
       The response should include the following fields:
       - "text": a very brief, poetic summary of all the submissions.
-      - "disturbance": a value between 0 and 1, representing the average turbidity of the water based on the level of despair vs hopefulness in the response (lower values are clearer, higher values are more murky).
+      - "disturbance": a value between 0 and 1, representing the average choppyness of the water based on the level of despair vs hopefulness in the response (lower values are clearer, higher values are more murky).
       - "waveSpeed": a value between 0 and 1 where wave speed is determined by the level of urgency or dynamic language in the responses. Faster speeds represent urgency or action-oriented language, while slower speeds represent reflection, calmness, or future vision. The number represents the average wave speed across all submissions.
       - "colors": an array of 3 colors, represented as hex codes, that visually express the most prevalent themes of the responses. They should create a distinct, visually pleasing palette. 
       - "explanation": a brief sentence explaining how the colors, disturbance, and wave speed relate to the theme of the responses.`,
@@ -77,10 +93,26 @@ export const getChatGPTCollectiveResponse = async (submissions) => {
       temperature: 0.7, // Optional: Adjust the creativity level
     });
 
-    const response = completion.choices[0].message.content.trim();
-    console.log("gpt response", response);
+    let response = completion.choices[0].message.content.trim();
+    console.log("Raw GPT Response:", response);
 
-    const parsedResponse = JSON.parse(response);
+    // Log the problematic section of the response to investigate further
+    console.log(
+      "Problematic section (position 280-320):",
+      response.substring(280, 320)
+    );
+
+    // Check if there are any invisible characters
+    const charArray = response.split("");
+    charArray.forEach((char, index) => {
+      console.log(`Character at index ${index}:`, char.charCodeAt(0));
+    });
+
+    // Remove trailing commas before parsing
+    response = response.replace(/,(\s*[}\]])/g, "$1"); // Remove any commas before closing braces
+    console.log("Fixed Response:", response);
+
+    const parsedResponse = JSON.parse(response); // Parse the fixed response
     return parsedResponse;
   } catch (error) {
     console.error("Error parsing JSON response:", error);

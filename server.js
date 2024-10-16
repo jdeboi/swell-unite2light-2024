@@ -37,10 +37,9 @@ const io = new SocketIo(server);
 
 app.post("/api/submit", async (req, res) => {
   try {
-    const content = req.body.content; // Correctly fetch content from req.body
+    const content = req.body.content;
     console.log("content submitted", content);
 
-    // Debug log to ensure content is being passed
     if (!content) {
       console.log("no content...", content);
       return res.status(400).send("No content provided in the request body.");
@@ -49,10 +48,11 @@ app.post("/api/submit", async (req, res) => {
     io.emit("startProcessing");
     console.log("processing text");
     const GPTData = await getChatGPTResponse(req.body.content);
+
     if (GPTData == null || !GPTData.text) {
-      io.emit("submissionError");
-      console.error("null");
-      res.status(500).send("Internal Server Error");
+      // io.emit("submissionError");
+      console.error("null response from GPT");
+      return res.status(500).send("Internal Server Error");
     }
 
     const submission = new NewSubmission({
@@ -64,15 +64,15 @@ app.post("/api/submit", async (req, res) => {
       color3: GPTData.colors[2],
       explanation: GPTData.explanation,
     });
-    // await submission.save();
+
+    // await submission.save(); // Uncomment when ready to save
 
     io.emit("newSubmission", GPTData);
-
-    res.status(201).send(submission);
+    return res.status(201).send(submission); // Ensure to return
   } catch (err) {
-    io.emit("submissionError");
+    // io.emit("submissionError");
     console.error("Error with submission text:", err);
-    res.status(500).send("Internal Server Error");
+    return res.status(500).send("Internal Server Error"); // Ensure to return
   }
 });
 

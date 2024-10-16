@@ -244,7 +244,7 @@ function displayError() {
     return;
   }
   transitionColors(nextColors);
-  sun.displayRays(0, pg);
+  sun.displayRays(pg, 0);
   beach.display(0, 0.5, 0.5, pg);
   textDisplay.displayMessage("error processing", pg);
 }
