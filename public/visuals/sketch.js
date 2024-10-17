@@ -99,7 +99,7 @@ function setup() {
 
   qrcode = invertImage(qrcode);
 
-  sun = new Sun(pg.width / 2, pg.height * 0.25, 80);
+  sun = new Sun(pg.width / 2, pg.height * 0.23, 80);
   beach.init();
   colors = [color(88, 91, 255), color(237, 12, 255), color(114, 238, 255)];
 
@@ -117,7 +117,7 @@ function setup() {
     100
   );
 
-  textDisplay = new TextDisplay(pg.width / 2, pg.height * 0.41, 40);
+  textDisplay = new TextDisplay(pg.width / 2, pg.height * 0.39, 40);
 }
 
 function draw() {
@@ -422,11 +422,11 @@ function invertImage(img) {
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   sun.x = pg.width / 2;
-  sun.y = pg.height * 0.25;
+  sun.y = pg.height * 0.23;
   backgroundGrad.w = pg.width;
   backgroundGrad.h = pg.height;
   centerGrad.x = pg.width / 2 - 100;
   centerGrad.h = pg.height;
   textDisplay.x = pg.width / 2;
-  textDisplay.y = pg.height * 0.41;
+  textDisplay.y = pg.height * 0.39;
 }
