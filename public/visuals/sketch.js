@@ -48,7 +48,10 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   const aspect = 890 / 775;
-  const w = width / aspect;
+  // the aspect ratio is width over height
+  // maximize the height to fit height
+  // adjust the width accordingly
+  const w = height * aspect;
   pg = createGraphics(w, height);
 
   textFont(font);
