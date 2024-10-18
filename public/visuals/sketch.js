@@ -47,12 +47,21 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
-  const aspect = 890 / 775;
-  // the aspect ratio is width over height
-  // maximize the height to fit height
-  // adjust the width accordingly
-  const w = height * aspect;
-  pg = createGraphics(w, height);
+  const aspect = 16 / 10;
+  // Calculate the width and height while maintaining the 16:10 aspect ratio
+  let w, h;
+
+  if (windowWidth / windowHeight > aspect) {
+    // Window is wider than the 16:10 ratio, so fit the height
+    h = windowHeight;
+    w = h * aspect;
+  } else {
+    // Window is taller than the 16:10 ratio, so fit the width
+    w = windowWidth;
+    h = w / aspect;
+  }
+  pg = createGraphics(w, h);
+  console.log(w, h);
 
   textFont(font);
   pg.textFont(font);
@@ -174,6 +183,12 @@ function draw() {
   // image(pg, 0, 0);
   // pop();
   quadMap.displayTexture(pg);
+
+  // push();
+  // translate(-width / 2, -height / 2);
+  // fill("red");
+  // rect(0, 0, pg.width, pg.height);
+  // pop();
 }
 
 function displayModeText(pg) {
